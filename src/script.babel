@@ -1,0 +1,370 @@
+
+const numbers = [
+ {
+    number: "1", id:"one" 
+  },{
+    number: "2", id:"two"
+  },{
+    number: "3", id:"three"
+  },{
+    number: "4", id:"four"
+  },{
+    number: "5", id:"five"
+  },{
+    number: "6", id:"six"
+  },{
+    number: "7", id:"seven"
+  },{
+    number: "8", id:"eight"
+  },{
+    number: "9", id:"nine"
+  },{
+    number: "0", id:'zero'
+  },
+]
+
+class Application extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={
+      result:"0",
+       operation:""       
+    }          
+  }
+  
+  updateState = (operation) =>{
+    let reg = /=/;
+    if (reg.test(operation)) {
+      let res = operation.match(/(=\d{1,})|([-+x÷]\d{1,})/g);
+        for (let i=0; i<res.length; i++) {
+  	      if( reg.test(res[i]) ){
+          res = res.slice(i);
+          }
+        }
+        res = res.join('')
+        operation= res.replace(/^=/, '')
+      return(operation);
+    }
+    else {
+      return(operation)
+    }
+  }
+  
+  handleClickKey = (event) => {
+    let result = this.state.result;
+    let operation = this.state.operation;
+    let reg = /[-+x÷]/;
+    let reg1 =/=/;
+    if (reg1.test(operation)) {
+      operation = this.updateState(operation);
+      this.setState({
+        operation: event.target.value,
+        result: event.target.value,    
+      })        
+    }
+    else if (result==="0") {
+      this.setState({
+        operation: event.target.value,
+        result: event.target.value,
+      })
+    } 
+    else if (reg.test(result)) {
+      this.setState({
+        operation: operation + event.target.value,
+        result: event.target.value,
+      })
+    }
+    else if(!reg.test(result)){
+      this.setState({
+        operation: operation + event.target.value,
+        result: result + event.target.value,
+      })
+    }
+    
+  }
+  
+  // Equal
+  handleEqual = () => {
+    let result = this.state.result;
+    let operation = this.state.operation;
+    let reg =/[=]/;
+ 
+    
+    if (reg.test(operation)===false) {
+      let equal = operation.replace('x', '*');
+      let resultat = equal.replace('÷', '/')
+      this.setState({
+        operation: operation+'='+eval(resultat),
+        result: eval(resultat),
+      })
+    } 
+    else if(reg.test(operation)===true){
+      operation = this.updateState(operation)
+      let equal = operation.replace('x', '*');
+      let resultat = equal.replace('÷', '/')
+      this.setState({
+        operation: operation+'='+eval(resultat),
+        result: eval(resultat),
+      })      
+    }  
+  }
+
+  // clear
+  handleClear = () => {
+    this.setState({
+      result:"0",
+      operation:"",
+    })
+  }
+  
+  // Decimal
+  handleDecimal = () => {
+    let reg = /[-+x÷]$/
+    let rege = /(\d{1,}[.]\d{1,})$/
+    let r = /\d$/
+    let result = this.state.result
+    let operation = this.state.operation;
+    if (operation==="") {
+      this.setState({
+        operation: '0.',
+        result: '0.'
+      })
+    } 
+    else if (reg.test(operation)===true) {
+      this.setState({
+        operation: operation+'0.',
+        result: '0.',
+      }) 
+    }
+    else if (r.test(operation)===true) {
+      if (rege.test(operation)===true) {
+        this.setState({
+          operation: operation,
+          result: result,
+        });
+      }
+      else {
+        this.setState({
+          operation: operation+'.',
+          result: result+'.',
+        });
+      }
+    }
+  }
+  
+  // addition
+  handleAdd = () => {
+    let reg = /[-+x÷]$/
+    let reg2 = /[-+x÷]{2}$/
+    let result = this.state.result;
+    let operation = this.state.operation;
+    if (operation==="") {
+      this.setState({
+        operation: '+',
+        result: '+',
+      })
+    } 
+    else if (reg.test(operation)===false) {
+      this.setState({
+        operation:this.updateState(operation)+'+',
+        result: '+',
+      }) 
+    }
+    else if(reg2.test(operation)===true || reg.test(operation)===true) {
+      let resultat =operation.replace(/[-+x÷]$/, "+");
+      operation = resultat.replace(/[-+x÷]{2}$/, "+");
+      this.setState({
+        operation: operation,
+        result:'+',
+      })       
+    }
+  }
+  
+  // Subtract
+  handleSubtract = () => {
+    let reg = /[-+x÷]$/
+    let rege = /[+x÷]$/
+    let result = this.state.result;
+    let operation = this.state.operation;
+    if (operation==="") {
+      this.setState({
+        operation: '-',
+        result: '-',
+      })
+    } 
+    else if (reg.test(operation)===false || rege.test(operation)===true)  {
+      this.setState({
+        operation: this.updateState(operation) + '-',
+        result: '-',
+      }) 
+    }
+  }
+  
+  // Divide
+  handleDivide = () => {
+    let reg = /[-+x÷]$/
+    let reg2 = /[-+x÷]{2}$/
+    let result = this.state.result;
+    let operation = this.state.operation;
+    if (operation==="") {
+      this.setState({
+        operation: '÷',
+        result: '÷',
+
+      })
+    } 
+    else if (reg.test(operation) === false) {
+      this.setState({
+        operation: this.updateState(operation)+'÷',
+        result: '÷',
+      }) 
+    }
+    else if(reg2.test(operation)===true || reg.test(operation)===true) {
+      let resultat =operation.replace(/[-+x/]$/, "÷");
+      operation = resultat.replace(/[-+x÷]{2}$/, "÷");
+      this.setState({
+        operation: operation,
+        result: '÷',
+      })       
+    }
+  }
+    
+  //Multiply
+  handleMultiply = () => {
+    let reg = /[-+x÷]$/
+    let reg2 = /[-+x÷]{2}$/
+    let result = this.state.result;
+    let operation = this.state.operation;
+    if (operation==="") {
+     this.setState({
+        operation: "x",
+        result: 'x',
+      })
+    } 
+    else if (reg.test(operation) === false) {
+      this.setState({
+        operation: this.updateState(operation)+'x',
+        result: "x",
+      }) 
+    }
+    else if (reg2.test(operation)===true || reg.test(result)===true) {
+      let resultat =operation.replace(/[-+x÷]$/, "x");
+      operation = resultat.replace(/[-+x÷]{2}$/, "x");
+      this.setState({
+        operation: operation,
+        result: 'x',
+      })       
+    }
+  }
+  
+  render () {
+    
+    return(
+      <div>
+      <div id='calculator'>
+        <div id="dis">   
+          {this.state.operation}
+         </div>       
+         <div id="display">   
+          {this.state.result}
+         </div>       
+        <div  id='number' className='col-xs-8' >
+        {numbers.map(n =>
+          <Numbers 
+            id ={n.id}
+            number={n.number}
+            onClick={this.handleClickKey}/>          
+        )}
+          <div>
+            <input
+              type="button"
+              id="decimal"
+              className='operant col-xs-4'  
+              onClick={this.handleDecimal}
+              value={"."} />
+          </div>
+            
+        </div>
+        
+        <div id="operation" className='col-xs-4'>
+          { /* handle clear when user click on AC button */}
+          <div>
+            <input
+              type="button"
+              id="clear"
+              className='btn-danger col-xs-12'
+              onClick={this.handleClear} 
+              value={"AC"}/>
+          </div>
+          
+          <div>
+            <input
+              type="button"
+               id="add"
+              className=' operant col-xs-6'
+              value={"+"}
+              onClick={this.handleAdd}/>
+          </div>
+        
+        <div>
+          <input
+            type="button"
+             id="subtract"
+            className='operant col-xs-6'      
+            value={"-"}
+            onClick={this.handleSubtract}/>
+        </div>
+        
+        <div>
+          <input
+            type="button"
+             id="multiply"
+            className='operant col-xs-6' 
+            value={"x"}
+            onClick={this.handleMultiply}/>
+        </div>
+        
+        <div>
+          <input 
+            type="button"
+             id="divide"
+            className='operant col-xs-6' 
+            value={"÷"}
+            onClick={this.handleDivide}/>
+        </div>
+          
+        <div>  
+          <input 
+            type="button"
+            id="equals"
+            className='btn-primary col-xs-12' 
+            value={"="}
+            onClick={this.handleEqual}/>
+        </div>
+          
+        </div>
+      
+      </div>
+      <div style={{width:90, margin:"auto", fontSize:20, color:"#1D702D"}}><a href="https://github.com/messaismael" target='_blank'> by Ismael</a></div>  
+     </div>
+    )
+  }
+} 
+
+class Numbers extends React.Component {
+  render(){
+    return(
+      
+        <input
+          type="button"
+          className='btn-default num col-xs-4'
+          id={this.props.id}
+          onClick={this.props.onClick}
+          value={this.props.number} />
+     
+    )
+  }
+}
+
+
+ReactDOM.render( <Application />, document.getElementById("app"))
